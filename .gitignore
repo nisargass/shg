@@ -1,12 +1,51 @@
-# Byte-compiled / optimized / DLL files
+# ==============================================================================
+# ENVIRONMENT & SECRETS - STRICTLY NEVER COMMIT
+# ==============================================================================
+.env
+.env.*
+!.env.example
+*.env
+**/.env
+**/.env.*
+!**/.env.example
+backend/.env
+backend/.env.*
+
+# Private Keys, Certificates, and Service Accounts
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+credentials.json
+service-account*.json
+id_rsa
+id_ecdsa
+id_ed25519
+
+# ==============================================================================
+# DATABASE FILES
+# ==============================================================================
+*.db
+*.sqlite
+*.sqlite3
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+backend/shg_saathi.db
+shg_saathi.db
+test_shg.db
+backend/tests/test_shg.db
+
+# ==============================================================================
+# BYTE-COMPILED / CACHE / BUILD ARTIFACTS
+# ==============================================================================
 __pycache__/
+**/*__pycache__*
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -24,34 +63,47 @@ wheels/
 .installed.cfg
 *.egg
 
-# Environment & secrets - NEVER commit
-.env
-.env.*
-!.env.example
-*.env
-backend/.env
-**/.env
+# ==============================================================================
+# VIRTUAL ENVIRONMENTS
+# ==============================================================================
 .venv
-env/
 venv/
+env/
 ENV/
 env.bak/
 venv.bak/
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Uploads
+# ==============================================================================
+# UPLOADS & USER CONTENT
+# ==============================================================================
 uploads/
 backend/uploads/
+**/*/uploads/
 
-# IDE files
+# ==============================================================================
+# LOGS & TEMPORARY FILES
+# ==============================================================================
+*.log
+logs/
+backend/logs/
+*.tmp
+*.bak
+*.swp
+*~
+
+# ==============================================================================
+# OS & IDE ARTIFACTS
+# ==============================================================================
+.DS_Store
+Thumbs.db
+desktop.ini
 .vscode/
 .idea/
 
-# Testing
+# ==============================================================================
+# TESTING & COVERAGE
+# ==============================================================================
 .pytest_cache/
+**/.pytest_cache/
 .coverage
 htmlcov/
