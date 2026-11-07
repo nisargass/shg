@@ -1,14 +1,21 @@
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, field_validator
 from app.core.permissions import UserRole
 
 
 class UserBase(BaseModel):
-    email: EmailStr
+    email: str
     full_name: str
     phone: Optional[str] = None
     role: UserRole = UserRole.SHG_MEMBER
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        if "@" not in v or "." not in v:
+            raise ValueError("Invalid email format")
+        return v.strip().lower()
 
 
 class UserCreate(UserBase):
@@ -16,7 +23,7 @@ class UserCreate(UserBase):
 
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 

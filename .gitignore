@@ -24,8 +24,13 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual environments
+# Environment & secrets - NEVER commit
 .env
+.env.*
+!.env.example
+*.env
+backend/.env
+**/.env
 .venv
 env/
 venv/

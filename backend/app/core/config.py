@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day
 
-    # External AI/ML Microservice
-    AI_SERVICE_BASE_URL: str = "http://localhost:8001"
+    # External AI/ML Microservice (Set to 'mock' or omit when microservice is not yet running)
+    AI_SERVICE_BASE_URL: str = "mock"
     AI_SERVICE_TIMEOUT_SECONDS: float = 10.0
     AI_SERVICE_USE_MOCK_FALLBACK: bool = True  # Allows local operation without failing if AI server is offline
 
