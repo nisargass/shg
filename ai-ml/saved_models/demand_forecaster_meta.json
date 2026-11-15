@@ -1,0 +1,31 @@
+{
+  "model_name": "SHG Retail & Bulk Demand Forecaster",
+  "model_version": "1.0.0",
+  "date_trained": "2026-11-14T13:25:16.057065+00:00",
+  "numeric_features": [
+    "past_7d_sales",
+    "past_30d_sales",
+    "seasonality_index",
+    "lead_time_days",
+    "physical_stock",
+    "bulk_reserved_stock",
+    "retail_reserved_stock",
+    "free_stock"
+  ],
+  "categorical_features": [
+    "product_category"
+  ],
+  "target": "next_14d_demand",
+  "metrics": {
+    "mae": 9.717,
+    "rmse": 13.347,
+    "r2_score": 0.9738,
+    "mean_actual_demand": 150.54,
+    "evaluated_samples": 300
+  },
+  "known_limitations": [
+    "Forecasts assume historical ordering patterns and festival seasonality multipliers.",
+    "Backend maintains authoritative physical inventory and reservation records.",
+    "AI forecasts do not directly alter inventory state."
+  ]
+}

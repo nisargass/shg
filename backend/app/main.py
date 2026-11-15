@@ -5,19 +5,17 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
 from app.api.v1.api import api_router
-from app.database.session import engine, Base
 from app.services.ai_client.base_client import AIServiceException
 
-# Auto-create all 30 database tables if not existing
-Base.metadata.create_all(bind=engine)
+is_production = settings.ENV.lower() in {"production", "prod"}
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Production-grade AI-powered backend for Self-Help Group (SHG) order fulfilment, workforce coordination, financial transparency and livelihood management.",
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    docs_url=None if is_production else "/docs",
+    redoc_url=None if is_production else "/redoc",
+    openapi_url=None if is_production else "/openapi.json"
 )
 
 # CORS Middleware
@@ -25,8 +23,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Global AIServiceException Handler

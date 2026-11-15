@@ -50,6 +50,7 @@ def create_bulk_order(
     )
 
 
+@router.get("", response_model=APIResponse[List[BulkOrderOut]], include_in_schema=False)
 @router.get("/", response_model=APIResponse[List[BulkOrderOut]])
 def list_bulk_orders(
     status_filter: Optional[OrderStatus] = Query(None, alias="status"),
@@ -78,12 +79,16 @@ def list_bulk_orders(
 
 @router.get("/{order_id}", response_model=APIResponse[BulkOrderOut])
 def get_bulk_order(
-    order_id: int,
+    order_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Retrieves full details of a specific bulk order."""
-    order = db.query(BulkOrder).filter(BulkOrder.id == order_id).first()
+    """Retrieves full details of a specific bulk order by integer ID or order_number."""
+    order = None
+    if order_id.isdigit():
+        order = db.query(BulkOrder).filter(BulkOrder.id == int(order_id)).first()
+    if not order:
+        order = db.query(BulkOrder).filter(BulkOrder.order_number == order_id).first()
     if not order:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bulk order not found")
 

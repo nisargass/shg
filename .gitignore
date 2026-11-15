@@ -10,6 +10,15 @@
 !**/.env.example
 backend/.env
 backend/.env.*
+!backend/.env.example
+
+# Local tooling, frontend build output, and deployment secrets
+node_modules/
+**/node_modules/
+frontend/dist/
+*.local
+.secrets/
+secrets/
 
 # Private Keys, Certificates, and Service Accounts
 *.pem

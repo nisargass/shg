@@ -26,5 +26,5 @@ RUN mkdir -p uploads
 # Expose FastAPI application port
 EXPOSE 8000
 
-# Run migrations and start server
-CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_data.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+# Run schema migrations and start the API without inserting demo users/data
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

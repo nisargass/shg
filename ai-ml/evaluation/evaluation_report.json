@@ -1,0 +1,39 @@
+{
+  "completion_models": {
+    "classification": {
+      "test_samples": 500,
+      "accuracy": 0.884,
+      "precision": 0.7424,
+      "recall": 0.5444,
+      "f1_score": 0.6282,
+      "roc_auc": 0.8801,
+      "brier_score": 0.0842,
+      "confusion_matrix": {
+        "TP": 49,
+        "FP": 17,
+        "TN": 393,
+        "FN": 41
+      }
+    },
+    "regression": {
+      "mae_days": 5.23,
+      "rmse_days": 7.66,
+      "r2_score": 0.9587
+    }
+  },
+  "financial_anomaly_detector": {
+    "test_samples": 360,
+    "anomalies_in_ground_truth": 42,
+    "anomalies_flagged": 42,
+    "precision": 0.881,
+    "recall": 0.881,
+    "f1_score": 0.881,
+    "roc_auc": 0.9961
+  },
+  "demand_forecaster": {
+    "test_samples": 300,
+    "mae_units": 9.717,
+    "rmse_units": 13.347,
+    "r2_score": 0.9738
+  }
+}

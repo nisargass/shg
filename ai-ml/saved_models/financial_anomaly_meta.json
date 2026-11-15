@@ -1,0 +1,28 @@
+{
+  "model_name": "SHG Financial Payout Anomaly Detector (Isolation Forest)",
+  "model_version": "1.0.0",
+  "date_trained": "2026-11-14T13:25:13.537336+00:00",
+  "feature_names": [
+    "units_produced",
+    "standard_piece_rate",
+    "applied_piece_rate",
+    "rate_ratio",
+    "gross_payout",
+    "deductions",
+    "deduction_ratio",
+    "net_payout",
+    "corrections_count"
+  ],
+  "metrics": {
+    "precision": 0.881,
+    "recall": 0.881,
+    "f1_score": 0.881,
+    "roc_auc": 0.9961,
+    "evaluated_samples": 360,
+    "actual_anomalies_detected": 42
+  },
+  "known_limitations": [
+    "Anomalies indicate statistical deviations and require human verification by SHG leader or accountant.",
+    "Never labels an artisan as fraudulent; provides advisory flags with supporting evidence."
+  ]
+}
