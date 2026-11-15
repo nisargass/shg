@@ -1,50 +1,94 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
-    container_name: shg_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword2026
-      POSTGRES_DB: shg_saathi
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER:-shg_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-shg_saathi}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-shg_app} -d ${POSTGRES_DB:-shg_saathi}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+    networks:
+      - private
+
+  ai-ml:
+    build:
+      context: ./ai-ml
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      DEBUG: "false"
+      HOST: 0.0.0.0
+      SHG_SERVICE_KEY: ${SHG_SERVICE_KEY:?Set SHG_SERVICE_KEY in .env}
+      LLM_PROVIDER: ${LLM_PROVIDER:-local}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-llama-3.1-70b-versatile}
+      VISION_PROVIDER: ${VISION_PROVIDER:-local}
+      VISION_API_KEY: ${VISION_API_KEY:-}
+      OCR_PROVIDER: ${OCR_PROVIDER:-local}
+      OCR_API_KEY: ${OCR_API_KEY:-}
+      SPEECH_PROVIDER: ${SPEECH_PROVIDER:-local}
+      SPEECH_API_KEY: ${SPEECH_API_KEY:-}
+      TRANSLATION_PROVIDER: ${TRANSLATION_PROVIDER:-local}
+      TRANSLATION_API_KEY: ${TRANSLATION_API_KEY:-}
+      CORS_ORIGINS: "[]"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - private
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: shg_backend
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
+      ai-ml:
+        condition: service_healthy
     environment:
       PROJECT_NAME: "SHG Saathi Backend"
-      ENV: "development"
-      DEBUG: "true"
-      DATABASE_URL: "postgresql://postgres:postgrespassword2026@db:5432/shg_saathi"
-      SECRET_KEY: "shg_saathi_super_secure_jwt_secret_key_change_in_production_2026"
-      ALGORITHM: "HS256"
-      ACCESS_TOKEN_EXPIRE_MINUTES: "1440"
-      AI_SERVICE_BASE_URL: "mock"
-      AI_SERVICE_TIMEOUT_SECONDS: "10.0"
-      AI_SERVICE_USE_MOCK_FALLBACK: "true"
-      UPLOAD_DIR: "./uploads"
-      BACKEND_CORS_ORIGINS: '["http://localhost:3000","http://localhost:5173","http://127.0.0.1:3000","http://127.0.0.1:5173"]'
+      ENV: production
+      DEBUG: "false"
+      ALLOW_PUBLIC_REGISTRATION: "false"
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-shg_app}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-shg_saathi}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      SHG_SERVICE_KEY: ${SHG_SERVICE_KEY:?Set SHG_SERVICE_KEY in .env}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+      AI_SERVICE_BASE_URL: http://ai-ml:8001
+      AI_SERVICE_TIMEOUT_SECONDS: 15
+      AI_SERVICE_USE_MOCK_FALLBACK: "false"
+      UPLOAD_DIR: /app/uploads
+      MAX_FILE_SIZE_MB: 25
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:?Set BACKEND_CORS_ORIGINS in .env}
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
-      - ./backend/uploads:/app/uploads
+      - shg_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - private
 
 volumes:
   postgres_data:
+  shg_uploads:
+
+networks:
+  private:

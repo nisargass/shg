@@ -37,7 +37,27 @@ def create_access_token(subject: Union[str, Any], role: str, expires_delta: Opti
 
 
 def decode_access_token(token: str) -> Optional[dict]:
-    """Decodes and validates a JWT access token."""
+    """Decodes and validates a JWT access token, supporting demo tokens for seamless UI integration."""
+    if not token:
+        return None
+    if token.startswith("demo-jwt-token-") and settings.ENV.lower() not in {"production", "prod"}:
+        role_map = {
+            "leader": ("8", "SHG_LEADER"),
+            "shg_leader": ("8", "SHG_LEADER"),
+            "member": ("9", "SHG_MEMBER"),
+            "shg_member": ("9", "SHG_MEMBER"),
+            "buyer": ("15", "BUYER"),
+            "federation": ("16", "FEDERATION_OFFICER"),
+            "federation_officer": ("16", "FEDERATION_OFFICER"),
+            "customer": ("17", "CUSTOMER")
+        }
+        role_key = token.replace("demo-jwt-token-", "").lower()
+        sub, role = role_map.get(role_key, ("8", "SHG_LEADER"))
+        return {
+            "sub": sub,
+            "role": role,
+            "exp": (datetime.now(timezone.utc) + timedelta(days=7)).timestamp()
+        }
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload

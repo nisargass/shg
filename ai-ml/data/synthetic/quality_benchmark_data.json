@@ -1,0 +1,58 @@
+{
+  "products": [
+    {
+      "product_id": 101,
+      "name": "Handloom Cotton Saree",
+      "category": "Handloom",
+      "color_tolerance_delta_e": 4.5,
+      "min_resolution_width": 640,
+      "min_resolution_height": 480,
+      "min_sharpness_score": 35.0,
+      "allowable_defect_types": [
+        "minor_thread_variance"
+      ],
+      "critical_defects": [
+        "weft_tear",
+        "stain",
+        "misaligned_border"
+      ],
+      "min_acceptable_quality_score": 80.0
+    },
+    {
+      "product_id": 102,
+      "name": "Terracotta Clay Pot",
+      "category": "Pottery",
+      "color_tolerance_delta_e": 6.0,
+      "min_resolution_width": 640,
+      "min_resolution_height": 480,
+      "min_sharpness_score": 40.0,
+      "allowable_defect_types": [
+        "minor_kiln_blush"
+      ],
+      "critical_defects": [
+        "rim_crack",
+        "structural_fracture",
+        "asymmetric_neck"
+      ],
+      "min_acceptable_quality_score": 85.0
+    },
+    {
+      "product_id": 103,
+      "name": "Embroidered Jute Shopping Bag",
+      "category": "Jute",
+      "color_tolerance_delta_e": 5.0,
+      "min_resolution_width": 640,
+      "min_resolution_height": 480,
+      "min_sharpness_score": 30.0,
+      "allowable_defect_types": [
+        "minor_fiber_fray"
+      ],
+      "critical_defects": [
+        "handle_detachment",
+        "broken_stitching",
+        "logo_distortion"
+      ],
+      "min_acceptable_quality_score": 82.0
+    }
+  ]
+}

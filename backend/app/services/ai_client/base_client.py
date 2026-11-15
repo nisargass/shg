@@ -88,9 +88,12 @@ class AIServiceClient:
         url = f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
         
         try:
-            timeout_config = httpx.Timeout(self.timeout, connect=1.0)
+            timeout_config = httpx.Timeout(self.timeout, connect=2.0)
+            headers = {
+                "X-SHG-Service-Key": settings.SHG_SERVICE_KEY
+            }
             with httpx.Client(timeout=timeout_config) as client:
-                response = client.post(url, json=payload)
+                response = client.post(url, json=payload, headers=headers)
                 response.raise_for_status()
                 data = response.json()
                 

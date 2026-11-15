@@ -1,4 +1,5 @@
 from tests.conftest import get_auth_header
+from app.core.config import settings
 
 
 def test_user_registration(client):
@@ -14,6 +15,18 @@ def test_user_registration(client):
     assert data["success"] is True
     assert data["data"]["email"] == "anita.weaver@shg.org"
     assert data["data"]["role"] == "SHG_MEMBER"
+
+
+def test_user_registration_can_be_disabled(client, monkeypatch):
+    monkeypatch.setattr(settings, "ALLOW_PUBLIC_REGISTRATION", False)
+    res = client.post("/api/v1/auth/register", json={
+        "email": "new.user@shg.org",
+        "password": "Password123!",
+        "full_name": "New User",
+        "role": "SHG_MEMBER",
+    })
+
+    assert res.status_code == 403
 
 
 def test_user_login(client, leader_user):

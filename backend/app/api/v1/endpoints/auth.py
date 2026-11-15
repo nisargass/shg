@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.database.session import get_db
+from app.core.config import settings
 from app.core.security import verify_password, hash_password, create_access_token
 from app.core.config import settings
 from app.models.user import User, SHGMember, Buyer
@@ -16,6 +17,12 @@ router = APIRouter()
 @router.post("/register", response_model=APIResponse[UserOut], status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
     """Registers a new user in the platform."""
+    if not settings.ALLOW_PUBLIC_REGISTRATION:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Public registration is disabled"
+        )
+
     existing_user = db.query(User).filter(User.email == user_in.email).first()
     if existing_user:
         raise HTTPException(
@@ -50,6 +57,32 @@ def login(
     """OAuth2 compatible token login, returning JWT access token."""
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Inactive user account")
+
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    token = create_access_token(subject=user.id, role=user.role, expires_delta=access_token_expires)
+
+    return Token(
+        access_token=token,
+        token_type="bearer",
+        user=UserOut.model_validate(user)
+    )
+
+
+@router.post("/login/json", response_model=Token)
+def login_json(
+    credentials: UserLogin,
+    db: Session = Depends(get_db)
+):
+    """JSON body login for frontend Single Page Application (SPA)."""
+    user = db.query(User).filter(User.email == credentials.email).first()
+    if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

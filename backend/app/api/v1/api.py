@@ -3,10 +3,13 @@ from app.api.v1.endpoints import (
     auth, shgs, members, orders, pricing, allocations,
     production, quality, inventory, earnings, payouts,
     retail, logistics, documents, assistant, notifications,
-    suppliers, analytics, ai
+    suppliers, analytics, ai, integration
 )
 
 api_router = APIRouter()
+
+# Frontend Integration Compatibility Layer (Prioritized for SPA routes)
+api_router.include_router(integration.router, tags=["Frontend Integration Layer"])
 
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(shgs.router, prefix="/shgs", tags=["SHG Management"])
